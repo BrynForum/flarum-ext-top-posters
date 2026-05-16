@@ -1,8 +1,8 @@
 # brynforum/top-posters
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/brynforum/top-posters.svg)](https://packagist.org/packages/brynforum/top-posters)
-[![Total Downloads](https://img.shields.io/packagist/dt/brynforum/top-posters.svg)](https://packagist.org/packages/brynforum/top-posters)
-[![License](https://img.shields.io/packagist/l/brynforum/top-posters.svg)](LICENSE)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/brynforum/top-posters.svg?cacheSeconds=3600)](https://packagist.org/packages/brynforum/top-posters)
+[![Total Downloads](https://img.shields.io/packagist/dt/brynforum/top-posters.svg?cacheSeconds=3600)](https://packagist.org/packages/brynforum/top-posters)
+[![License](https://img.shields.io/packagist/l/brynforum/top-posters.svg?cacheSeconds=3600)](LICENSE)
 
 A [Flarum](https://flarum.org) extension that adds **top-posters leaderboards** to the forum index. Shows the most active members of the past month and all time, side-by-side on desktop, stacked-and-collapsible on mobile.
 
