@@ -1,0 +1,183 @@
+// BrynForum Top Posters — forum styles.
+//
+// The two cards sit above the discussion list on IndexPage. On desktop
+// (>768px) they're side-by-side and fully expanded. On mobile they stack,
+// collapsed by default, and toggle open via the header button.
+
+.TopPostersPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 16px;
+
+    @media (min-width: 768px) {
+        flex-direction: row;
+        gap: 16px;
+
+        > * {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+    }
+}
+
+// Flarum exposes theme tokens as LESS variables (@text-color, @control-bg,
+// @muted-color etc.). Using those here means we inherit the active theme +
+// night-mode without us managing palettes ourselves.
+
+.TopPostersCard {
+    background: @control-bg;
+    color: @control-color;
+    border-radius: 6px;
+    // No `overflow: hidden` here — we used to clip the inner header/body
+    // to the rounded corners, but that also clipped the hover UserCard
+    // (`.UserCard--popover`) which positions itself absolute beyond the
+    // row. The cards look fine without overflow:hidden because the
+    // header/body inherit the corner from this container's bg.
+}
+
+// The row needs to be a positioning context so .UserCard--popover (a
+// child rendered on hover) anchors against it instead of falling through
+// to the document.
+.TopPostersCard-row {
+    position: relative;
+}
+
+// Core's `.UserCard--popover` defaults to width: 500px which is fine for
+// post-author hovers but slightly wide for our two-column TopPostersPanel.
+// We pin to 420px — wider than 320px so all the stats sit comfortably, but
+// narrow enough that the card stays inside the IndexPage-results column.
+.TopPostersCard .UserCard--popover {
+    z-index: 50;
+    width: 420px;
+    max-width: 90vw; // phones: let it scale down to the viewport
+}
+
+// When oxotheme is the active theme, adopt its 13px corner radius + soft
+// box-shadow so the cards visually match the rest of the IndexPage
+// (discussion rows, hero block, etc.). The `has-oxotheme` body class is
+// added in js/src/forum/index.js iff `flarum.extensions['yannisme-oxotheme']`
+// is loaded — so this rule is a no-op for non-oxo tenants.
+body.has-oxotheme .TopPostersCard {
+    border-radius: 13px;
+    box-shadow: rgba(0, 0, 0, 0.10) 0 1px 3px 0,
+                rgba(0, 0, 0, 0.06) 0 1px 2px 0;
+}
+
+.TopPostersCard-header {
+    width: 100%;
+    text-align: left;
+    padding: 10px 14px;
+    background: transparent;
+    border: 0;
+    // Buttons don't reliably inherit `color` across browsers; set the theme
+    // text colour explicitly so the title doesn't fall back to user-agent
+    // ButtonText (black on most platforms).
+    color: @control-color;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 14px;
+
+    &:hover {
+        background: fade(@text-color, 5%);
+    }
+
+    &:focus-visible {
+        outline: 2px solid @primary-color;
+        outline-offset: -2px;
+    }
+}
+
+.TopPostersCard-toggle {
+    color: @muted-color;
+    font-size: 12px;
+
+    @media (min-width: 768px) {
+        display: none;
+    }
+}
+
+.TopPostersCard-body {
+    padding: 0 14px 12px;
+}
+
+// Mobile: collapse the body unless the card is explicitly expanded. On
+// desktop the body always shows (the `min-width: 768px` rule below wins
+// regardless of the .is-expanded class).
+@media (max-width: 767px) {
+    .TopPostersCard .TopPostersCard-body {
+        display: none;
+    }
+    .TopPostersCard.is-expanded .TopPostersCard-body {
+        display: block;
+    }
+}
+
+.TopPostersCard-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.TopPostersCard-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 14px;
+
+    & + & {
+        border-top: 1px solid var(--control-bg-hover, rgba(0, 0, 0, 0.05));
+    }
+}
+
+.TopPostersCard-rank {
+    flex: 0 0 22px;
+    color: var(--muted-color, #6c757d);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    font-weight: 600;
+}
+
+.TopPostersCard-user {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: inherit;
+    text-decoration: none;
+    min-width: 0;
+
+    &:hover .TopPostersCard-name {
+        text-decoration: underline;
+    }
+}
+
+.TopPostersCard-avatar {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+}
+
+.TopPostersCard-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.TopPostersCard-count {
+    flex: 0 0 auto;
+    color: var(--muted-color, #6c757d);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+}
+
+.TopPostersCard-empty {
+    color: var(--muted-color, #6c757d);
+    margin: 0;
+    font-size: 13px;
+}

@@ -1,0 +1,33 @@
+{
+    "name": "brynforum/top-posters",
+    "description": "Top posters widget for Flarum: shows the most active members of the past month and all time, on the forum index. Mobile-responsive (collapsed accordion on small screens, expanded on desktop). Configurable list lengths and headings.",
+    "type": "flarum-extension",
+    "license": "MIT",
+    "require": {
+        "flarum/core": "^1.8.0"
+    },
+    "authors": [
+        {
+            "name": "BrynForum",
+            "email": "hello@brynforum.com",
+            "homepage": "https://brynforum.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "BrynForum\\TopPosters\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Top Posters",
+            "category": "feature",
+            "icon": {
+                "name": "fas fa-trophy",
+                "backgroundColor": "#d08770",
+                "color": "#fff"
+            }
+        }
+    },
+    "minimum-stability": "stable"
+}
