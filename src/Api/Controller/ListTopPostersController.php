@@ -7,6 +7,7 @@ use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\User\User;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -26,9 +27,29 @@ class ListTopPostersController implements RequestHandlerInterface
 {
     public const MAX_LIMIT = 50;
 
+    /**
+     * Cached column-existence lookups. The schema doesn't change at runtime,
+     * so we only probe each column once per process.
+     */
+    private static array $hasPostsColumn = [];
+
     public function __construct(
         protected SettingsRepositoryInterface $settings,
     ) {
+    }
+
+    /**
+     * Whether the `posts` table has the named column right now.
+     *
+     * Used to gate optional WHERE clauses against columns added by sibling
+     * extensions: `is_approved` (flarum/approval) and `is_spam` (fof/anti-spam)
+     * are both common but not guaranteed on every install. Without these
+     * guards the join SQL would 1054 on a fresh Flarum.
+     */
+    private function hasPostsColumn(string $column): bool
+    {
+        return self::$hasPostsColumn[$column]
+            ??= Schema::hasColumn('posts', $column);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -90,14 +111,22 @@ class ListTopPostersController implements RequestHandlerInterface
             ->selectRaw('COUNT(*) as post_count')
             ->join('posts', function (JoinClause $join) use ($period) {
                 // Flarum's posts table uses hidden_at for soft-deletion; no
-                // deleted_at column. Also filter is_approved=1 / is_spam=0
-                // so unapproved or spam-flagged posts don't inflate counts.
+                // deleted_at column. The is_approved (flarum/approval) and
+                // is_spam (fof/anti-spam) clauses are gated by schema-check
+                // because those extensions add the columns via migration —
+                // omit the WHERE when the column doesn't exist or the SQL
+                // 1054s on a fresh Flarum that doesn't run either extension.
                 $join->on('posts.user_id', '=', 'users.id')
                     ->where('posts.type', '=', 'comment')
                     ->whereNull('posts.hidden_at')
-                    ->where('posts.is_private', '=', 0)
-                    ->where('posts.is_approved', '=', 1)
-                    ->where('posts.is_spam', '=', 0);
+                    ->where('posts.is_private', '=', 0);
+
+                if ($this->hasPostsColumn('is_approved')) {
+                    $join->where('posts.is_approved', '=', 1);
+                }
+                if ($this->hasPostsColumn('is_spam')) {
+                    $join->where('posts.is_spam', '=', 0);
+                }
 
                 if ($period === 'month') {
                     $join->where(
