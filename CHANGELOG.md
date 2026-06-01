@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/BrynForum/flarum-ext-top-posters/compare/v0.1.2...v0.1.3) (2026-06-01)
+
+
+### Bug Fixes
+
+* inject ConnectionInterface for schema-check, drop broken Schema facade ([d26c833](https://github.com/BrynForum/flarum-ext-top-posters/commit/d26c833c6b96935704b2804d685216ebf7ecd857))
+
 ## [0.1.2](https://github.com/BrynForum/flarum-ext-top-posters/compare/v0.1.1...v0.1.2) (2026-06-01)
 
 
