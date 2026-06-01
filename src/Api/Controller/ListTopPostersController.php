@@ -5,9 +5,8 @@ namespace BrynForum\TopPosters\Api\Controller;
 use Carbon\Carbon;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\User\User;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\JoinClause;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -35,6 +34,7 @@ class ListTopPostersController implements RequestHandlerInterface
 
     public function __construct(
         protected SettingsRepositoryInterface $settings,
+        protected ConnectionInterface $db,
     ) {
     }
 
@@ -45,11 +45,17 @@ class ListTopPostersController implements RequestHandlerInterface
      * extensions: `is_approved` (flarum/approval) and `is_spam` (fof/anti-spam)
      * are both common but not guaranteed on every install. Without these
      * guards the join SQL would 1054 on a fresh Flarum.
+     *
+     * Uses the injected ConnectionInterface rather than Laravel's Schema
+     * facade — the facade's static $app property isn't bound for Flarum
+     * extension controllers at construct time, so `Schema::hasColumn` blows
+     * up with "Trying to access array offset on null" before it can even
+     * resolve the schema builder.
      */
     private function hasPostsColumn(string $column): bool
     {
         return self::$hasPostsColumn[$column]
-            ??= Schema::hasColumn('posts', $column);
+            ??= $this->db->getSchemaBuilder()->hasColumn('posts', $column);
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
