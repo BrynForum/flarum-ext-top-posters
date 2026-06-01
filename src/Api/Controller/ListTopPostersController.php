@@ -129,10 +129,15 @@ class ListTopPostersController implements RequestHandlerInterface
                 }
 
                 if ($period === 'month') {
+                    // Calendar month, not rolling 30 days — "Top Posters This
+                    // Month" resets at midnight on the 1st as the widget label
+                    // promises. Rolling-window semantics surprised users on
+                    // 2026-06-01 because every post still fell inside the prior
+                    // 30 days, so month and all-time looked identical.
                     $join->where(
                         'posts.created_at',
                         '>=',
-                        Carbon::now()->subDays(30),
+                        Carbon::now()->startOfMonth(),
                     );
                 }
             })
