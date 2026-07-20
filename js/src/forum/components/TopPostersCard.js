@@ -207,6 +207,5 @@ function makeUserShim(u) {
 }
 
 function formatCount(n) {
-    if (n >= 1000) return Math.round(n / 100) / 10 + 'k';
     return String(n);
 }
