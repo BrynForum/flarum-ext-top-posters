@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/BrynForum/flarum-ext-top-posters/compare/v0.1.3...v0.1.4) (2026-07-24)
+
+
+### Bug Fixes
+
+* group post counts by browser locale via toLocaleString ([79fa08f](https://github.com/BrynForum/flarum-ext-top-posters/commit/79fa08f346588c905a642c8811a4b257a459b7ea))
+* remove k-suffix abbreviation from post counts, always display raw number ([cd39798](https://github.com/BrynForum/flarum-ext-top-posters/commit/cd39798843bd4f64240412be20f05d6bbbb1fb98))
+
 ## [0.1.3](https://github.com/BrynForum/flarum-ext-top-posters/compare/v0.1.2...v0.1.3) (2026-06-01)
 
 
