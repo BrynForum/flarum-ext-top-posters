@@ -207,5 +207,7 @@ function makeUserShim(u) {
 }
 
 function formatCount(n) {
-    return String(n);
+    // Absolute count, grouped per the visitor's browser locale
+    // (1,500 in en, 1.500 in de, 1 500 in fr).
+    return n.toLocaleString();
 }
